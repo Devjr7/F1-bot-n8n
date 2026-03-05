@@ -1,0 +1,93 @@
+{
+  "name": "F1 0.0",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.espn.com/espn/rss/f1/news",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -112,
+        -32
+      ],
+      "id": "4b62364e-6c19-4503-90b9-18e3b1e84f57",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst seen = [];\nconst newItems = [];\nfor (const item of items) {\n    if (!seen.includes(item.json.link)) {\n        seen.push(item.json.link);\n        newItems.push(item);\n    }\n}\nreturn newItems.slice(0,7);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        -32
+      ],
+      "id": "5c0fbc85-c6b1-414c-ae44-f78ff63342d6",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://discord.com/api/webhooks/1479027378133925899/u-lRaSleYsBYBJVx0j5wky3UxdghaseT-chwfsHphfSD8_H0BEgww6V3I5CzDhXro-8o",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": "={{ $json.creator }}\n{{ $json.contentSnippet }}\n{{ $json.title }}\n{{ $json.link }}\n{{ $json.pubDate }}\n{{ $json['dc:creator'] }}\n{{ $json.guid }}\n{{ $json.isoDate }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        304,
+        -32
+      ],
+      "id": "aeef80e5-dd2d-45e7-8c9d-da6fd54d2e89",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "640878b9-43d2-4f4f-a4f3-7b5af5518986",
+  "meta": {
+    "instanceId": "eea2809621a23a19d346c67c30b4be3898d871a928bfa355c8a8ff570aa039ca"
+  },
+  "id": "skmYi9qYuXpaKjFw",
+  "tags": []
+}
